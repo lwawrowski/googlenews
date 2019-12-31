@@ -1,0 +1,121 @@
+---
+title: "Text mining"
+subtitle: "na przykładzie Google News"
+author: "&copy; Łukasz Wawrowski"
+date: ""
+output:
+  xaringan::moon_reader:
+    css: ["default.css", "default-fonts.css"]
+    lib_dir: libs
+    nature:
+      ratio: "16:9"
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r include=FALSE}
+library(tidyverse)
+library(countdown)
+```
+
+# Plan szkolenia
+
+1. Wprowadzenie
+
+2. Odlegość pomiędzy tekstami
+
+3. Metoda n-gramów
+
+4. Lemmatyzacja
+
+---
+
+# Materiały
+
+Pakiety R:
+
+- udpipe
+
+- stylo
+
+- ngram
+
+- stringdist
+
+---
+
+# Źródła danych
+
+---
+
+# Wprowadzenie
+
+Text mining - ogólna nazwa metod eksploracji danych służących do wydobywania danych z tekstu i ich późniejszej obróbki [[Wikipedia](https://pl.wikipedia.org/wiki/Text_mining)].
+
+Zastosowania:
+
+- łączenie niedeterministyczne
+
+- analiza wydzwięku/sentymentu
+
+- przetwarzanie języka naturalnego
+
+---
+
+# Części mowy
+
+- rzeczownik (NOUN)
+- czasownik (VERB)
+- przymiotnik (ADJ - adjective)
+- przysłówek (ADV - adverb)
+
+- zaimek (PRON - pronoun)
+- nazwy własne (PROPN - proper noun)
+- przyimki określajace położenie (ADP - adposition)
+- wykrzyknik (INTJ - interjection)
+- spójnik koordynujący (CCONJ - coordinating conjunction)
+- znak interpunkcyjny (PUNCT - punctuation)
+- liczebnik (NUM - numeral)
+- partykuła (PART = particle)
+- (AUX - auxiliary)
+- (DET - determiner)
+- spójnik podrzędny (SCONJ - subordinating conjunction)
+- (SYM - symbol)
+
+[źródło](https://universaldependencies.org/u/pos/index.html)
+
+---
+
+# Lematyzacja
+
+Sprowadzanie formy fleksyjnej wyrazu do postaci słownikowej.
+
+---
+
+# Zbiór wynikowy
+
+---
+
+# Kontekst
+
+Dla słów ważny jest kontekst. 
+
+- RAKE (Rapid Automatic Keyword Extraction)
+
+- Punktowa wzajemna informacja (Pointwise mutual information)
+
+- Parts of Speech phrase sequence detection
+
+---
+
+# RAKE
+
+https://monkeylearn.com/keyword-extraction/
+
+---
+
+# PMI
+
+https://en.wikipedia.org/wiki/Pointwise_mutual_information
+

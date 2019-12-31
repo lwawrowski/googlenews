@@ -19,4 +19,4 @@ googlenews <- news %>%
 # googlenews 19805 obs.
 # 14% unique
 
-save(googlenews, file="googlenews.RData")
+save(googlenews, file="data/googlenews.RData")
