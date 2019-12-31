@@ -92,7 +92,7 @@ head(cooc, 50)
 library(igraph)
 library(ggraph)
 
-wordnetwork <- head(cooc, 30)
+wordnetwork <- head(cooc, 50)
 wordnetwork <- graph_from_data_frame(wordnetwork)
 
 ggraph(wordnetwork, layout = "fr") +
@@ -100,3 +100,11 @@ ggraph(wordnetwork, layout = "fr") +
   geom_node_text(aes(label = name), col = "darkgreen", size = 4)
 
 
+cooc <- cooccurrence(news_sub$token, skipgram = 1)
+
+wordnetwork <- head(cooc, 50)
+wordnetwork <- graph_from_data_frame(wordnetwork)
+
+ggraph(wordnetwork, layout = "fr") +
+  geom_edge_link(aes(width = cooc, edge_alpha = cooc), edge_colour = "pink") +
+  geom_node_text(aes(label = name), col = "darkgreen", size = 4)
