@@ -25,7 +25,7 @@ library(countdown)
 
 1. Wprowadzenie
 
-2. Odlegość pomiędzy tekstami
+2. Podobieństwo tekstów
 
 3. Metoda n-gramów
 
@@ -107,8 +107,6 @@ Bazowe funkcje w R są mało intuicyjne.
 
 Pakiet **stringi** autorstwa Marka Gągolewskiego zawierający 234 funkcje.
 
-Pakiet **stringr** zawierający 42 funkcje z pakietu **stringi**.
-
 - prosty w użyciu - funkcje zaczynają się przedrostkiem `stri_`
 
 - wiele przydatnych funkcji
@@ -121,6 +119,8 @@ Pakiet **stringr** zawierający 42 funkcje z pakietu **stringi**.
 paste(letters[1:3], NA)
 stri_join(letters[1:3], NA)
 ```
+
+Pakiet **stringr** zawiera 42 funkcje z pakietu **stringi**.
 
 ???
 
@@ -376,6 +376,16 @@ Z przedziału 0-1 - 0 oznacza identyczne ciągi
 
 ---
 
+# Podsumowanie
+
+Prezentacja wyników
+
+- wykres Sankeya
+
+- wykres strunowy (chord diagram)
+
+---
+
 # Przykład
 
 Podczas kolokwium studenci udostępniali swoje kody R, które wykorzystali do rozwiązania zadań. Za pomocą analizy podobieństwa sprawdź czy można na tej podstawie zidentyfikować studentów, którzy nie pracowali samodzielnie.
@@ -393,6 +403,36 @@ Zbiór danych [kody](data/kody.RData):
 Nazwiska lubią być przekręcane. Na podstawie [bazy nazwisk w województwie śląskim](data/nazwiska.RData) zidentyfikuj te najbardziej podobne z wykorzystaniem różnych miar odległości. Ze względu na bardzo dużą liczbę obserwacji warto ograniczyć się do nazwisk występujących np. conajmniej 200 razy. 
 
 Jak można przekręcić nazwisko "Kowalski"? Jakie nazwiska mogą powstać poprzez zmianę tylko jednej litery w tym nazwisku?
+
+---
+
+# Metoda n-gramów
+
+Identyfikacja pojawiających się najczęściej par oraz trójek **sąsiadujących** ze sobą słów. 
+
+1. Oczyszczenie danych
+
+2. Usunięcie stop-słów
+
+   - dla wybranych języków - funkcja `stopwords` z pakietu _tm_
+   
+   - dla języka polskiego - [lista 350 słów](https://github.com/bieli/stopwords/blob/master/polish.stopwords.txt)
+
+3. Prezentacja wyników jako wykresu słupkowego lub chmury słów
+
+---
+
+# Czyszczenie danych
+
+- usunięcie znaków niealfanumerycznych `str_replace_all("[^[:alnum:] ]", " ")`
+
+- usunięcie zbędnych spacji `str_squish()`
+
+- usunięcie [stop-słów](data/polish_stopwords.txt) `read_lines("data/polish_stopwords.txt")`
+
+- usunięcie cyfr i liczb `is.na(as.numeric())`
+
+- usunięcie krótkich ciągłów `str_length()`
 
 ---
 

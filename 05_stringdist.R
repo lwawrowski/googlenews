@@ -71,3 +71,5 @@ mdf_unique %>%
 
 kowalski <- mdf_unique %>% 
   filter(from == "KUBICA")
+
+
