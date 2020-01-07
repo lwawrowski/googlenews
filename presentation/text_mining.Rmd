@@ -29,21 +29,29 @@ library(countdown)
 
 3. Metoda n-gramów
 
-4. Lemmatyzacja
+4. Lematyzacja
 
 ---
 
-# Materiały
+# Łukasz Wawrowski
 
-Pakiety R:
 
-- udpipe
+---
 
-- stylo
+# Why R?
 
-- ngram
+1. Natywna obsługa danych
 
-- stringdist
+2. Łatwe w obsłudze repozytorium pakietów
+
+3. [Programowanie funkcyjne](https://adv-r.hadley.nz/fp.html)
+
+4. [Metaprogramowanie](https://adv-r.hadley.nz/metaprogramming.html)
+
+???
+
+https://blog.shotwell.ca/posts/why_i_use_r/
+
 
 ---
 
@@ -89,13 +97,13 @@ charToRaw(tekst)
 rawToChar(rev(charToRaw(tekst)))
 ```
 
----
-
-# Przetwarzanie napisów
+--
 
 Bazowe funkcje w R są mało intuicyjne.
 
---
+---
+
+# Przetwarzanie napisów
 
 Pakiet **stringi** autorstwa Marka Gągolewskiego zawierający 234 funkcje.
 
@@ -120,43 +128,271 @@ https://drive.google.com/drive/u/0/folders/0B-ZJyVlQBsqlcXRsaHI5bDdtaUk
 
 ---
 
-# Wyrażenia regularne
+# Odległość tekstów
+
+Miara podobieństwa pomiędzy dwoma tekstami. Własności:
+
+1. nieujemność $d(s,t) \geq 0$
+
+2. identyczność $d(s,t) = 0 \Longleftrightarrow s = t$
+
+3. symetria $d(s,t)=d(t,s)$
+
+4. nierówność trójkąta $d(s,u) \leq d(s,t) + d(t,u)$
 
 ---
 
-# Odległość tekstów
+# Pakiet stringdist
 
-- **odległość Hamminga** - liczba takich samych znaków na tej samej pozycji w obu ciągach. Może być obliczona tylko dla tekstów o tej samej długości.
-- **odległość Levenshteina** - odległość to liczba kroków wymaganych do przekształcenia jednego ciągu znaków w drugi. Działania jakie można wykonywać to wstawienie nowego znaku, usunięcie znaku lub zamianę znaku na nowy znak.
-- **odległość Damerau-Levenshteina** - podobnie jak odległość Levenshteina, ale wprowadza działanie polegające na zamianie miejscami sąsiadujących znaków.
-- **odległość Damerau-Levenshteina z ograniczeniem** - podobnie jak odległość Damerau-Levenshteina, ale każdy podłańcuch może być modyfikowany tylko raz.
-- **najdłuższy wspólny podłańcuch** (ang. longest common substring) - znajduje najdłuższy ciąg elementów leżących obok siebie w obu ciągach, natomiast odległość to liczba niesparowanych znaków.
-- **odległość Jaro** - średnia z odsetka wspólnych znaków w pierwszym ciągu, odsetka wspólnych znaków w drugim ciągu oraz odsetka wspólnych znaków nie wymagających transpozycji. Przyjmuje wartości od 0 do 1, gdzie 0 to teksty identyczne, a 1 zupełnie różne.
-- **odległość Jaro-Winklera** - zwiększenie podobieństwa ciągów, które według odległości Jaro są do siebie podobne.
+[stringdist](https://cran.r-project.org/web/packages/stringdist/index.html) - Approximate String Matching and String Distance Functions.
 
-[źródło](https://www.joyofdata.de/blog/comparison-of-string-distance-algorithms/)
+[van der Loo M (2014). “The stringdist package for approximate string matching.” _The R Journal_, *6*, 111-122.](https://journal.r-project.org/archive/2014-1/loo.pdf)
 
+Funkcje
+
+```{r}
+stringdist(a = "tekst1", b = "tekst2", method = "osa", q = 1, p = 0)
+```
+
+```{r}
+stringdistmatrix(a = c("tekst1", "tekst2"), 
+                 b = "tekst2", 
+                 method = "osa", 
+                 q = 1, 
+                 p = 0)
+```
+
+---
+
+# Odległość Hamminga
+
+Liczba różnych znaków na tej samej pozycji w obu ciągach. Może być obliczona tylko dla tekstów o tej samej długości.
+
+```{r}
+stringdist("wydawnictwo", "wydawnicwto", method = "hamming")
+```
+
+```{r}
+stringdist("przynajmniej", "bynajmniej", method = "hamming")
+```
+
+---
+
+# Najdłuższy wspólny podłańcuch 
+
+Znajduje najdłuższy ciąg znaków (ang. longest common substring) leżących obok siebie w obu ciągach, natomiast odległość to liczba niesparowanych znaków.
+
+```{r}
+stringdist("wydawnictwo", "wydawnicwto", method = "lcs")
+```
+
+```{r}
+stringdist("przynajmniej", "bynajmniej", method = "lcs")
+```
+
+---
+
+# Odległość Levenshteina
+
+Odległość to liczba kroków wymaganych do przekształcenia jednego ciągu znaków w drugi. Działania jakie można wykonywać to wstawienie nowego znaku, usunięcie znaku lub zamianę znaku na nowy znak.
+
+```{r}
+stringdist("wydawnictwo", "wydawnicwto", method = "lv")
+```
+
+```{r}
+stringdist("przynajmniej", "bynajmniej", method = "lv")
+```
+
+---
+
+# Odległość Damerau-Levenshteina 
+
+Podobnie jak odległość Levenshteina, ale wprowadza działanie polegające na zamianie miejscami sąsiadujących znaków.
+
+```{r}
+stringdist("wydawnictwo", "wydawnicwto", method = "dl")
+```
+
+```{r}
+stringdist("przynajmniej", "bynajmniej", method = "dl")
+```
+
+---
+
+### Odległość Damerau-Levenshteina z ograniczeniem 
+
+_Optimal string aligment_ - podobnie jak odległość Damerau-Levenshteina, ale każdy podłańcuch może być modyfikowany tylko raz. Nie spełnia nierówności trójkąta.
+
+```{r}
+stringdist("wydawnictwo", "wydawnicwto", method = "osa")
+```
+
+```{r}
+stringdist("przynajmniej", "bynajmniej", method = "osa")
+```
+
+---
+
+# Q-gram
+
+Ciąg zawierający $q$ następujących po sobie znaków ( $v(s;q)$ ). Odległość można zdefiniować jako liczbę unikalnych $q$ gramów.
+
+```{r}
+qgrams("przynajmniej", "bynajmniej", q=2)
+```
+
+```{r}
+stringdist("przynajmniej", "bynajmniej", method = "qgram", q = 2)
+```
 
 ---
 
 # Q-gram
 
 ```{r}
-qgrams("przynajmniej", "bynajmniej", q=2)
+qgrams("wydawnictwo", "wydawnicwto", q=2)
 ```
-
-- **odległość q-gramu** - liczba różnych q-gramów w obu ciągach
 
 ```{r}
-stringdist("przynajmniej", "bynajmniej", method = "qgram", q=2)
+stringdist("wydawnictwo", "wydawnicwto", method = "qgram", q = 2)
 ```
 
-- **odległość cosinusowa** - 
+---
+
+# Odległość Jaccarda
+
+Jeśli $Q(s;q)$ oznacza zbiór unikalnych $q$ gramów w ciągu $s$ to odległość Jaccarda jest zdefiniowana jako:
+
+$$d(s,t;q)=1-\frac{|Q(s;q) \cap Q(t;q)|}{|Q(s;q) \cup Q(t;q)|}$$
+
+gdzie pionowe kreski oznaczają liczbę unikalnych elementów w zbiorze. Odległość Jaccarda zawiera się w przedziale od 0 do 1, gdzie 0 oznacza teksty identyczne ( $Q(s;q) = Q(t;q)$ ), a 1 zupełnie różne ( $Q(s;q) \cap Q(t;q)=\emptyset$ )
 
 ```{r}
-stringdist("przynajmniej", "bynajmniej", method = "cosine", q=2)
+stringdist("przynajmniej", "bynajmniej", method = "jaccard", q = 2)
 ```
 
+
+```{r}
+stringdist("wydawnictwo", "wydawnicwto", method = "jaccard", q = 2)
+```
+
+---
+
+# Odległość cosinusowa
+
+Odległość cosinusowa jest zdefiniowana jako:
+
+$$d(s,t;q)=1-\frac{v(s;q)\cdot v(t;q)}{||v(s;q)||_2||v(t;q)||_2}$$
+
+Odległość cosinusowa wynosi 0 jeśli oba ciągi są takie same oraz 1, gdy nie ma żadnych wspólnych $q$ gramów.
+
+```{r}
+stringdist("przynajmniej", "bynajmniej", method = "cosine", q = 2)
+```
+
+
+```{r}
+stringdist("wydawnictwo", "wydawnicwto", method = "cosine", q = 2)
+```
+
+---
+
+# Odległość Jaro
+
+Średnia z odsetka wspólnych znaków w pierwszym ciągu, odsetka wspólnych znaków w drugim ciągu oraz odsetka wspólnych znaków nie wymagających transpozycji. Przyjmuje wartości od 0 do 1, gdzie 0 to teksty identyczne, a 1 zupełnie różne.
+
+```{r}
+stringdist("wydawnictwo", "wydawnicwto", method = "jw")
+```
+
+```{r}
+stringdist("przynajmniej", "bynajmniej", method = "jw")
+```
+
+---
+
+# Odległość Jaro-Winklera 
+
+Zwiększenie podobieństwa ciągów, które według odległości Jaro są do siebie podobne. Kara za wykonanie modyfikacji z przedziału $0-0.25$.
+
+```{r}
+stringdist("wydawnictwo", "wydawnicwto", method = "jw", p = 0.1)
+```
+
+```{r}
+stringdist("przynajmniej", "bynajmniej", method = "jw", p = 0.1)
+```
+
+???
+
+[źródło](https://www.joyofdata.de/blog/comparison-of-string-distance-algorithms/)
+
+---
+
+# Soundex
+
+Ciąg znaków jest tłumaczony do zapisu fonetycznego. Jeżeli zapis fonetyczny jest taki sam to odległość wynosi 0, a w przeciwnym przypadku 1. Działa wyłącznie dla liter a-z.
+
+```{r}
+phonetic("beer")
+```
+
+
+```{r}
+stringdist("beer", "wine", method = "soundex")
+```
+
+
+```{r}
+stringdist("bear", "beer", method = "soundex")
+```
+
+---
+
+# Podsumowanie
+
+Im mniej tym większe podobieństwo
+
+- najdłuższy wspólny podłańcuch (`lcs`)
+
+- odległość Levenshteina (`lv`)
+
+- odległość Damerau-Levenshteina (`dl`)
+
+- odległość Damerau-Levenshteina z ograniczeniem (`osa`)
+
+- q-gram (`qgram`)
+
+Z przedziału 0-1 - 0 oznacza identyczne ciągi
+
+- odległość Jaccarda (`jaccard`)
+
+- odległość cosinusowa (`cosine`)
+
+- odległość Jaro i Jaro-Winklera (`jw`)
+
+- soundex
+
+---
+
+# Przykład
+
+Podczas kolokwium studenci udostępniali swoje kody R, które wykorzystali do rozwiązania zadań. Za pomocą analizy podobieństwa sprawdź czy można na tej podstawie zidentyfikować studentów, którzy nie pracowali samodzielnie.
+
+Zbiór danych [kody](data/kody.RData):
+
+- id - identyfikator osoby i grupy
+
+- odp - kod R 
+
+---
+
+# Zadanie
+
+Nazwiska lubią być przekręcane. Na podstawie [bazy nazwisk w województwie śląskim](data/nazwiska.RData) zidentyfikuj te najbardziej podobne z wykorzystaniem różnych miar odległości. Ze względu na bardzo dużą liczbę obserwacji warto ograniczyć się do nazwisk występujących np. conajmniej 200 razy. 
+
+Jak można przekręcić nazwisko "Kowalski"? Jakie nazwiska mogą powstać poprzez zmianę tylko jednej litery w tym nazwisku?
 
 ---
 
