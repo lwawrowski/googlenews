@@ -1,25 +1,24 @@
----
-title: "Text mining"
-subtitle: "na przykładzie Google News"
-author: "&copy; Łukasz Wawrowski"
-date: ""
-output:
-  xaringan::moon_reader:
-    css: ["default.css", "default-fonts.css"]
-    lib_dir: libs
-    nature:
-      ratio: "16:9"
-      highlightStyle: github
-      highlightLines: true
-      countIncrementalSlides: false
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <title>Text mining</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="© Łukasz Wawrowski" />
+    <link rel="stylesheet" href="default.css" type="text/css" />
+    <link rel="stylesheet" href="default-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Text mining
+## na przykładzie Google News
+### © Łukasz Wawrowski
+
 ---
 
-```{r include=FALSE}
-library(tidyverse)
-library(stringi)
-library(stringdist)
-library(countdown)
-```
+
+
 
 # Plan szkolenia
 
@@ -79,7 +78,7 @@ https://blog.shotwell.ca/posts/why_i_use_r/
 
 --
 
-- prezentacja ze szkolenia: [lwawrowski.github.io/tm/](http://lwawrowski.github.io/tm/)
+- prezentacja ze szkolenia: lwawrowski.github.io/tm/
 
 ---
 
@@ -94,8 +93,6 @@ Zastosowania:
 - analiza wydzwięku/sentymentu
 
 - przetwarzanie języka naturalnego
-
-- identyfikacja duplikatów
 
 ---
 
@@ -124,7 +121,7 @@ install.packages("tidyverse")
 - lubridate - operacje na datach
 - hms - operacje na czasie dnia
 - blob - przechowywanie danych binarnych
-- magrittr - przetwarzanie potokowe `%>%`
+- magrittr - przetwarzanie potokowe `%&gt;%`
 - glue - łączenie tekstów
 
 ]
@@ -172,8 +169,6 @@ Zawartość zbiorów:
 
 ---
 
-class: inverse
-
 # Zadanie
 
 Przeprowadź eksploracyjną analizę danych dla zbioru googlenews. 
@@ -192,13 +187,13 @@ Przeprowadź eksploracyjną analizę danych dla zbioru googlenews.
 
 Miara podobieństwa pomiędzy dwoma tekstami. Własności:
 
-1. nieujemność $d(s,t) \geq 0$
+1. nieujemność `\(d(s,t) \geq 0\)`
 
-2. identyczność $d(s,t) = 0 \Longleftrightarrow s = t$
+2. identyczność `\(d(s,t) = 0 \Longleftrightarrow s = t\)`
 
-3. symetria $d(s,t)=d(t,s)$
+3. symetria `\(d(s,t)=d(t,s)\)`
 
-4. nierówność trójkąta $d(s,u) \leq d(s,t) + d(t,u)$
+4. nierówność trójkąta `\(d(s,u) \leq d(s,t) + d(t,u)\)`
 
 ---
 
@@ -210,16 +205,28 @@ Miara podobieństwa pomiędzy dwoma tekstami. Własności:
 
 Funkcje
 
-```{r}
+
+```r
 stringdist(a = "tekst1", b = "tekst2", method = "osa", q = 1, p = 0)
 ```
 
-```{r}
+```
+## [1] 1
+```
+
+
+```r
 stringdistmatrix(a = c("tekst1", "tekst2"), 
                  b = "tekst2", 
                  method = "osa", 
                  q = 1, 
                  p = 0)
+```
+
+```
+##      [,1]
+## [1,]    1
+## [2,]    0
 ```
 
 ---
@@ -228,12 +235,22 @@ stringdistmatrix(a = c("tekst1", "tekst2"),
 
 Liczba różnych znaków na tej samej pozycji w obu ciągach. Może być obliczona tylko dla tekstów o tej samej długości.
 
-```{r}
+
+```r
 stringdist("wydawnictwo", "wydawnicwto", method = "hamming")
 ```
 
-```{r}
+```
+## [1] 2
+```
+
+
+```r
 stringdist("przynajmniej", "bynajmniej", method = "hamming")
+```
+
+```
+## [1] Inf
 ```
 
 ---
@@ -242,12 +259,22 @@ stringdist("przynajmniej", "bynajmniej", method = "hamming")
 
 Znajduje najdłuższy ciąg znaków (ang. longest common substring) leżących obok siebie w obu ciągach, natomiast odległość to liczba niesparowanych znaków.
 
-```{r}
+
+```r
 stringdist("wydawnictwo", "wydawnicwto", method = "lcs")
 ```
 
-```{r}
+```
+## [1] 2
+```
+
+
+```r
 stringdist("przynajmniej", "bynajmniej", method = "lcs")
+```
+
+```
+## [1] 4
 ```
 
 ---
@@ -256,12 +283,22 @@ stringdist("przynajmniej", "bynajmniej", method = "lcs")
 
 Odległość to liczba kroków wymaganych do przekształcenia jednego ciągu znaków w drugi. Działania jakie można wykonywać to wstawienie nowego znaku, usunięcie znaku lub zamianę znaku na nowy znak.
 
-```{r}
+
+```r
 stringdist("wydawnictwo", "wydawnicwto", method = "lv")
 ```
 
-```{r}
+```
+## [1] 2
+```
+
+
+```r
 stringdist("przynajmniej", "bynajmniej", method = "lv")
+```
+
+```
+## [1] 3
 ```
 
 ---
@@ -270,12 +307,22 @@ stringdist("przynajmniej", "bynajmniej", method = "lv")
 
 Podobnie jak odległość Levenshteina, ale wprowadza działanie polegające na zamianie miejscami sąsiadujących znaków.
 
-```{r}
+
+```r
 stringdist("wydawnictwo", "wydawnicwto", method = "dl")
 ```
 
-```{r}
+```
+## [1] 1
+```
+
+
+```r
 stringdist("przynajmniej", "bynajmniej", method = "dl")
+```
+
+```
+## [1] 3
 ```
 
 ---
@@ -284,57 +331,101 @@ stringdist("przynajmniej", "bynajmniej", method = "dl")
 
 _Optimal string aligment_ - podobnie jak odległość Damerau-Levenshteina, ale każdy podłańcuch może być modyfikowany tylko raz. Nie spełnia nierówności trójkąta.
 
-```{r}
+
+```r
 stringdist("wydawnictwo", "wydawnicwto", method = "osa")
 ```
 
-```{r}
+```
+## [1] 1
+```
+
+
+```r
 stringdist("przynajmniej", "bynajmniej", method = "osa")
 ```
 
+```
+## [1] 3
+```
+
 ---
 
 # Q-gram
 
-Ciąg zawierający $q$ następujących po sobie znaków ( $v(s;q)$ ). Odległość można zdefiniować jako liczbę unikalnych $q$ gramów.
+Ciąg zawierający `\(q\)` następujących po sobie znaków ( `\(v(s;q)\)` ). Odległość można zdefiniować jako liczbę unikalnych `\(q\)` gramów.
 
-```{r}
+
+```r
 qgrams("przynajmniej", "bynajmniej", q=2)
 ```
 
-```{r}
+```
+##    pr rz zy yn na ni aj jm mn ie ej by
+## V1  1  1  1  1  1  1  1  1  1  1  1  0
+## V2  0  0  0  1  1  1  1  1  1  1  1  1
+```
+
+
+```r
 stringdist("przynajmniej", "bynajmniej", method = "qgram", q = 2)
+```
+
+```
+## [1] 4
 ```
 
 ---
 
 # Q-gram
 
-```{r}
+
+```r
 qgrams("wydawnictwo", "wydawnicwto", q=2)
 ```
 
-```{r}
+```
+##    wy yd da wn wo wt ni tw to ic aw ct cw
+## V1  1  1  1  1  1  0  1  1  0  1  1  1  0
+## V2  1  1  1  1  0  1  1  0  1  1  1  0  1
+```
+
+
+```r
 stringdist("wydawnictwo", "wydawnicwto", method = "qgram", q = 2)
+```
+
+```
+## [1] 6
 ```
 
 ---
 
 # Odległość Jaccarda
 
-Jeśli $Q(s;q)$ oznacza zbiór unikalnych $q$ gramów w ciągu $s$ to odległość Jaccarda jest zdefiniowana jako:
+Jeśli `\(Q(s;q)\)` oznacza zbiór unikalnych `\(q\)` gramów w ciągu `\(s\)` to odległość Jaccarda jest zdefiniowana jako:
 
-$$d(s,t;q)=1-\frac{|Q(s;q) \cap Q(t;q)|}{|Q(s;q) \cup Q(t;q)|}$$
+`$$d(s,t;q)=1-\frac{|Q(s;q) \cap Q(t;q)|}{|Q(s;q) \cup Q(t;q)|}$$`
 
-gdzie pionowe kreski oznaczają liczbę unikalnych elementów w zbiorze. Odległość Jaccarda zawiera się w przedziale od 0 do 1, gdzie 0 oznacza teksty identyczne ( $Q(s;q) = Q(t;q)$ ), a 1 zupełnie różne ( $Q(s;q) \cap Q(t;q)=\emptyset$ )
+gdzie pionowe kreski oznaczają liczbę unikalnych elementów w zbiorze. Odległość Jaccarda zawiera się w przedziale od 0 do 1, gdzie 0 oznacza teksty identyczne ( `\(Q(s;q) = Q(t;q)\)` ), a 1 zupełnie różne ( `\(Q(s;q) \cap Q(t;q)=\emptyset\)` )
 
-```{r}
+
+```r
 stringdist("przynajmniej", "bynajmniej", method = "jaccard", q = 2)
 ```
 
+```
+## [1] 0.3333333
+```
 
-```{r}
+
+
+```r
 stringdist("wydawnictwo", "wydawnicwto", method = "jaccard", q = 2)
+```
+
+```
+## [1] 0.4615385
 ```
 
 ---
@@ -343,17 +434,27 @@ stringdist("wydawnictwo", "wydawnicwto", method = "jaccard", q = 2)
 
 Odległość cosinusowa jest zdefiniowana jako:
 
-$$d(s,t;q)=1-\frac{v(s;q)\cdot v(t;q)}{||v(s;q)||_2||v(t;q)||_2}$$
+`$$d(s,t;q)=1-\frac{v(s;q)\cdot v(t;q)}{||v(s;q)||_2||v(t;q)||_2}$$`
 
-Odległość cosinusowa wynosi 0 jeśli oba ciągi są takie same oraz 1, gdy nie ma żadnych wspólnych $q$ gramów.
+Odległość cosinusowa wynosi 0 jeśli oba ciągi są takie same oraz 1, gdy nie ma żadnych wspólnych `\(q\)` gramów.
 
-```{r}
+
+```r
 stringdist("przynajmniej", "bynajmniej", method = "cosine", q = 2)
 ```
 
+```
+## [1] 0.1959697
+```
 
-```{r}
+
+
+```r
 stringdist("wydawnictwo", "wydawnicwto", method = "cosine", q = 2)
+```
+
+```
+## [1] 0.3
 ```
 
 ---
@@ -362,26 +463,46 @@ stringdist("wydawnictwo", "wydawnicwto", method = "cosine", q = 2)
 
 Średnia z odsetka wspólnych znaków w pierwszym ciągu, odsetka wspólnych znaków w drugim ciągu oraz odsetka wspólnych znaków nie wymagających transpozycji. Przyjmuje wartości od 0 do 1, gdzie 0 to teksty identyczne, a 1 zupełnie różne.
 
-```{r}
+
+```r
 stringdist("wydawnictwo", "wydawnicwto", method = "jw")
 ```
 
-```{r}
+```
+## [1] 0.03030303
+```
+
+
+```r
 stringdist("przynajmniej", "bynajmniej", method = "jw")
+```
+
+```
+## [1] 0.1166667
 ```
 
 ---
 
 # Odległość Jaro-Winklera 
 
-Zwiększenie podobieństwa ciągów, które według odległości Jaro są do siebie podobne. Kara za wykonanie modyfikacji z przedziału $0-0.25$.
+Zwiększenie podobieństwa ciągów, które według odległości Jaro są do siebie podobne. Kara za wykonanie modyfikacji z przedziału `\(0-0.25\)`.
 
-```{r}
+
+```r
 stringdist("wydawnictwo", "wydawnicwto", method = "jw", p = 0.1)
 ```
 
-```{r}
+```
+## [1] 0.01818182
+```
+
+
+```r
 stringdist("przynajmniej", "bynajmniej", method = "jw", p = 0.1)
+```
+
+```
+## [1] 0.1166667
 ```
 
 ???
@@ -394,18 +515,33 @@ stringdist("przynajmniej", "bynajmniej", method = "jw", p = 0.1)
 
 Ciąg znaków jest tłumaczony do zapisu fonetycznego. Jeżeli zapis fonetyczny jest taki sam to odległość wynosi 0, a w przeciwnym przypadku 1. Działa wyłącznie dla liter a-z.
 
-```{r}
+
+```r
 phonetic("beer")
 ```
 
-
-```{r}
-stringdist("beer", "wine", method = "soundex")
+```
+## [1] "B600"
 ```
 
 
-```{r}
+
+```r
+stringdist("beer", "wine", method = "soundex")
+```
+
+```
+## [1] 1
+```
+
+
+
+```r
 stringdist("bear", "beer", method = "soundex")
+```
+
+```
+## [1] 0
 ```
 
 ---
@@ -440,7 +576,8 @@ Z przedziału 0-1 - 0 oznacza identyczne ciągi
 
 Pakiet _ggalluvial_
 
-```{r eval=FALSE}
+
+```r
 ggplot(data, aes(y = value, axis1 = from, axis2 = to)) +
   geom_alluvium(aes(fill = value)) +
   geom_stratum(width = 1/12, fill = "black", color = "grey") +
@@ -453,7 +590,8 @@ ggplot(data, aes(y = value, axis1 = from, axis2 = to)) +
 
 Pakiet _circlize_
 
-```{r eval=FALSE}
+
+```r
 chordDiagram(data)
 ```
 
@@ -473,8 +611,9 @@ Wówczas wykres stworzy się automatycznie.
 
 Potrzebne pakiety _igraph_ oraz _ggraph_.
 
-```{r eval=FALSE}
-wordnetwork <- graph_from_data_frame(data)
+
+```r
+wordnetwork &lt;- graph_from_data_frame(data)
 
 ggraph(wordnetwork, layout = "fr") +
   geom_edge_link(aes(width = cooc, edge_alpha = cooc), edge_colour = "lightblue") +
@@ -496,8 +635,6 @@ Zbiór danych [kody](data/kody.RData):
 
 ---
 
-class: inverse
-
 # Zadanie
 
 Nazwiska lubią być przekręcane. Na podstawie [bazy nazwisk w województwie śląskim](data/nazwiska.RData) zidentyfikuj te najbardziej podobne z wykorzystaniem różnych miar odległości. Ze względu na bardzo dużą liczbę obserwacji warto ograniczyć się do nazwisk występujących np. conajmniej 200 razy. 
@@ -512,14 +649,31 @@ Operacje na wektorach.
 
 --
 
-```{r}
-tekst <- "Text mining w R"
+
+```r
+tekst &lt;- "Text mining w R"
 
 nchar(tekst)
+```
 
+```
+## [1] 15
+```
+
+```r
 charToRaw(tekst)
+```
 
+```
+##  [1] 54 65 78 74 20 6d 69 6e 69 6e 67 20 77 20 52
+```
+
+```r
 rawToChar(rev(charToRaw(tekst)))
+```
+
+```
+## [1] "R w gninim txeT"
 ```
 
 --
@@ -540,9 +694,21 @@ Pakiet **stringi** autorstwa Marka Gągolewskiego zawierający 234 funkcje.
 
 - bardzo _eRowy_
 
-```{r}
+
+```r
 paste(letters[1:3], NA)
+```
+
+```
+## [1] "a NA" "b NA" "c NA"
+```
+
+```r
 stri_join(letters[1:3], NA)
+```
+
+```
+## [1] NA NA NA
 ```
 
 Pakiet **stringr** zawiera 42 funkcje z pakietu **stringi**.
@@ -589,7 +755,8 @@ Identyfikacja pojawiających się najczęściej pojedyńczych słów, a także p
 
 Funkcja `unnest_tokens` z pakietu _tidytext_ służy do zamiany długiego tekstu na n-gramy.
 
-```{r eval=FALSE}
+
+```r
 unnest_tokens(tbl = zbior, output = nazwa_kolumny, input = nazwa_kolumny,
               token = "words", n = 1, drop = FALSE)
 ```
@@ -612,11 +779,9 @@ Analizowana kolumna nie może zawierać braków danych `NA`.
 
 ---
 
-class: inverse
-
 # Zadanie
 
-Na podstawie artykułów dotyczących sportu przeprowadź analizę n-gramów. Kto był najczęściej przywoływanym sportowcem w badanym okresie? 
+Na podstawie artykułów dotyczących sportu przeprowadź analizę n-gramów. 
 
 ---
 
@@ -634,9 +799,9 @@ Biblioteka stworzona przez Instytut Lingwistyki Formalnej i Stosowanej na Uniwer
 
 Stworzony niezależnie pakiet R [udpipe](https://bnosac.github.io/udpipe/en/index.html).
 
-1. Pobranie modelu dla języka polskiego `mod <- udpipe_download_model(language = "polish-lfg")`
+1. Pobranie modelu dla języka polskiego `mod &lt;- udpipe_download_model(language = "polish-lfg")`
 
-2. Załadowanie tego modelu `model <- udpipe_load_model("sciezka")`
+2. Załadowanie tego modelu `model &lt;- udpipe_load_model("sciezka")`
 
 3. Tagowanie i lematyzacja tekstu `udpipe_annotate()`
 
@@ -708,7 +873,7 @@ Wyszukiwanie słów kluczowych niekoniecznie występujących obok siebie.
 
 3. Obliczenie wyniku na podstawie macierzy
 
-4. $T$ fraz z najwyższym wynikiem uznawane są za słowa kluczowe
+4. `\(T\)` fraz z najwyższym wynikiem uznawane są za słowa kluczowe
 
 ???
 
@@ -720,7 +885,8 @@ https://monkeylearn.com/keyword-extraction/
 
 Funkcja
 
-```{r eval=FALSE}
+
+```r
 keywords_rake(x, term, group, relevant, ngram_max = 2, n_min = 2)
 ```
 
@@ -742,13 +908,13 @@ keywords_rake(x, term, group, relevant, ngram_max = 2, n_min = 2)
 
 Analiza kolokacji słów na podstawie częstości występowania.
 
-$$PMI=log_2\frac{p(x,y)}{p(x)p(y)}$$
+`$$PMI=log_2\frac{p(x,y)}{p(x)p(y)}$$`
 
-- $p(x,y)$ - częstość występowania pary słów $x$ i $y$
+- `\(p(x,y)\)` - częstość występowania pary słów `\(x\)` i `\(y\)`
 
-- $p(x)$ - częstość występowania słowa $x$
+- `\(p(x)\)` - częstość występowania słowa `\(x\)`
 
-- $p(y)$ - częstość występowania słowa $y$
+- `\(p(y)\)` - częstość występowania słowa `\(y\)`
 
 PMI równe 0 oznacza, że analizowane słowa są statystycznie niezależne. Dodania wartość PMI oznacza, że analizowane słowa występują częściej niż wynikałoby to z założenia o niezależności. 
 
@@ -760,7 +926,8 @@ https://en.wikipedia.org/wiki/Pointwise_mutual_information
 
 # PMI
 
-```{r eval=FALSE}
+
+```r
 keywords_collocation(x, term, group, ngram_max = 2, n_min = 2)
 ```
 
@@ -778,7 +945,8 @@ keywords_collocation(x, term, group, ngram_max = 2, n_min = 2)
 
 # Współwystępowanie
 
-```{r eval=FALSE}
+
+```r
 cooccurrence(x, term, group)
 ```
 
@@ -792,14 +960,121 @@ Funkcja zwróci bigramy wraz z liczbą wystąpień.
 
 ---
 
-class: inverse
-
 # Zadanie
 
-Na podstawie danych z googlenews z okresu 3-8.01.2020 przeprowadź kompleksową analizę tekstu wykorzystując wszystkie poznane metody. 
+Na podstawie danych z googlenews przeprowadź analizę tekstu.
 
 ---
 
 class: center, middle, inverse
 
 # Dziękuję za uwagę!
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
