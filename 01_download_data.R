@@ -40,8 +40,8 @@ a <- Sys.time()
 news <- get_news(api_key)
 Sys.time() - a
 
-start_time <- "18-08-2019 23:00"
-end_time <- "2-09-2019 3:00"
+start_time <- "3-01-2020 13:00"
+end_time <- "8-01-2020 18:00"
 
 int <- dmy_hm(start_time) %--% dmy_hm(end_time)
 time<- int@.Data/60

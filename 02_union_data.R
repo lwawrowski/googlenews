@@ -2,6 +2,8 @@ library(tidyverse)
 
 pliki <- list.files("data")
 
+pliki <- pliki[str_detect(pliki, "2020")]
+
 news <- data.frame()
 
 for(i in 1:length(pliki)){
@@ -12,11 +14,11 @@ for(i in 1:length(pliki)){
   
 }
 
-googlenews <- news %>%
+googlenews2020 <- news %>%
   distinct()
 
 # news 137557 obs.
 # googlenews 19805 obs.
 # 14% unique
 
-save(googlenews, file="data/googlenews.RData")
+save(googlenews2020, file="data/googlenews2020.RData")
