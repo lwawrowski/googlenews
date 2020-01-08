@@ -20,18 +20,6 @@ class: center, middle, inverse, title-slide
 
 
 
-# Plan szkolenia
-
-1. Wprowadzenie
-
-2. Podobieństwo tekstów
-
-3. Metoda n-gramów
-
-4. Lematyzacja
-
----
-
 # Łukasz Wawrowski
 
 - Uniwersytet Ekonomiczny w Poznaniu
@@ -54,6 +42,18 @@ class: center, middle, inverse, title-slide
 
 ---
 
+# Plan szkolenia
+
+1. Wprowadzenie
+
+2. Podobieństwo tekstów
+
+3. Metoda n-gramów
+
+4. Tagowanie i lematyzacja
+
+---
+
 # Why R?
 
 1. Natywna obsługa danych
@@ -64,9 +64,7 @@ class: center, middle, inverse, title-slide
 
 4. [Metaprogramowanie](https://adv-r.hadley.nz/metaprogramming.html)
 
-???
-
-https://blog.shotwell.ca/posts/why_i_use_r/
+[źródło](https://blog.shotwell.ca/posts/why_i_use_r/)
 
 ---
 
@@ -78,7 +76,7 @@ https://blog.shotwell.ca/posts/why_i_use_r/
 
 --
 
-- prezentacja ze szkolenia: lwawrowski.github.io/tm/
+- prezentacja ze szkolenia: [lwawrowski.github.io/tm/](http://lwawrowski.github.io/tm/)
 
 ---
 
@@ -93,6 +91,8 @@ Zastosowania:
 - analiza wydzwięku/sentymentu
 
 - przetwarzanie języka naturalnego
+
+- identyfikacja duplikatów
 
 ---
 
@@ -146,13 +146,13 @@ library("tidyverse")
 
 ---
 
-# Zbiór googlenews
+# Zbiory googlenews
 
 Dane pobierane przez [newsapi.org](https://newsapi.org/) w dwóch okresach:
 
 - [19.08.2019 - 1.09.2019](data/googlenews.RData)
 
-- 3.01.2019 - 8.01.2020
+- [3.01.2019 - 8.01.2020](data/googlenews2020.RData)
 
 Zawartość zbiorów:
 
@@ -168,6 +168,8 @@ Zawartość zbiorów:
 - category - jedna z 7 kategorii artykułu: business, entertainment, general, health, science, sports, technology
 
 ---
+
+class: inverse
 
 # Zadanie
 
@@ -572,6 +574,18 @@ Z przedziału 0-1 - 0 oznacza identyczne ciągi
 
 ---
 
+# Przykład
+
+Podczas kolokwium studenci udostępniali swoje kody R, które wykorzystali do rozwiązania zadań. Za pomocą analizy podobieństwa sprawdź czy można na tej podstawie zidentyfikować studentów, którzy nie pracowali samodzielnie.
+
+Zbiór danych [kody](data/kody.RData):
+
+- id - identyfikator osoby i grupy
+
+- odp - kod R 
+
+---
+
 # Wykres Sankeya
 
 Pakiet _ggalluvial_
@@ -623,17 +637,7 @@ ggraph(wordnetwork, layout = "fr") +
 
 ---
 
-# Przykład
-
-Podczas kolokwium studenci udostępniali swoje kody R, które wykorzystali do rozwiązania zadań. Za pomocą analizy podobieństwa sprawdź czy można na tej podstawie zidentyfikować studentów, którzy nie pracowali samodzielnie.
-
-Zbiór danych [kody](data/kody.RData):
-
-- id - identyfikator osoby i grupy
-
-- odp - kod R 
-
----
+class: inverse
 
 # Zadanie
 
@@ -779,9 +783,11 @@ Analizowana kolumna nie może zawierać braków danych `NA`.
 
 ---
 
+class: inverse
+
 # Zadanie
 
-Na podstawie artykułów dotyczących sportu przeprowadź analizę n-gramów. 
+Na podstawie artykułów dotyczących sportu przeprowadź analizę n-gramów. Kto był najczęściej przywoływanym sportowcem w badanym okresie? 
 
 ---
 
@@ -960,9 +966,11 @@ Funkcja zwróci bigramy wraz z liczbą wystąpień.
 
 ---
 
+class: inverse
+
 # Zadanie
 
-Na podstawie danych z googlenews przeprowadź analizę tekstu.
+Na podstawie danych z [googlenews z okresu 3-8.01.2020](data/googlenews2020.RData) przeprowadź kompleksową analizę tekstu wykorzystując wszystkie poznane metody. 
 
 ---
 
