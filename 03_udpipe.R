@@ -11,6 +11,7 @@ news_general <- googlenews %>%
   mutate(unique_id = 1:nrow(.))
 
 model <- udpipe_load_model(mod$file_model)
+model <- udpipe_load_model(file = "polish-lfg-ud-2.4-190531.udpipe")
 
 x <- udpipe_annotate(model, x = news_general$title, doc_id = news_general$unique_id)
 
@@ -27,7 +28,7 @@ x %>%
 # rzeczownik
 
 x %>%
-  filter(upos == "NOUN") %>%
+  filter(upos == "AUX") %>%
   count(token) %>% 
   filter(n > 40) %>%
   mutate(token = fct_reorder(token, n)) %>% 
@@ -65,7 +66,7 @@ stats <- keywords_rake(x = x, term = "token", group = "doc_id", relevant = x$upo
 
 stats %>%
   filter(ngram == 2) %>% 
-  arrange(desc(freq))
+  arrange(desc(rake))
 
 # PMI
 
@@ -77,6 +78,9 @@ x_adj_noun <- x %>%
 stats <- keywords_collocation(x = x_adj_noun, term = "word", group = "doc_id", ngram_max = 4)
 
 stats %>%
+  arrange(desc(pmi))
+
+stats %>%
   arrange(desc(freq))
 
 # graf
@@ -85,8 +89,7 @@ news_sub <- x %>%
   filter(upos %in% c("NOUN", "PROPN", "VERB"))
 
 cooc <- cooccurrence(x = news_sub, 
-                     term = "token", 
-                     group = c("doc_id", "paragraph_id", "sentence_id"))
+                     term = "token", group = "doc_id", skipgram = 1)
 head(cooc, 50)
 
 library(igraph)
@@ -96,8 +99,9 @@ wordnetwork <- head(cooc, 50)
 wordnetwork <- graph_from_data_frame(wordnetwork)
 
 ggraph(wordnetwork, layout = "fr") +
-  geom_edge_link(aes(width = cooc, edge_alpha = cooc), edge_colour = "pink") +
-  geom_node_text(aes(label = name), col = "darkgreen", size = 4)
+  geom_edge_link(aes(width = cooc, edge_alpha = cooc), edge_colour = "lightblue") +
+  geom_node_text(aes(label = name), col = "black", size = 4) +
+  theme_graph()
 
 
 cooc <- cooccurrence(news_sub$token, skipgram = 1)
@@ -107,4 +111,5 @@ wordnetwork <- graph_from_data_frame(wordnetwork)
 
 ggraph(wordnetwork, layout = "fr") +
   geom_edge_link(aes(width = cooc, edge_alpha = cooc), edge_colour = "pink") +
-  geom_node_text(aes(label = name), col = "darkgreen", size = 4)
+  geom_node_text(aes(label = name), col = "darkgreen", size = 4) +
+  theme_graph(base_family = "Arial Narrow")

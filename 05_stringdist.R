@@ -20,6 +20,16 @@ mdf_unique <- mdf %>%
   filter(value != Inf) %>% 
   filter(from != to)
 
+mdf_unique_graph <- mdf_unique %>% 
+  top_n(50, -value)
+
+wordnetwork <- graph_from_data_frame(mdf_unique_graph)
+
+ggraph(wordnetwork, layout = "fr") +
+  geom_edge_link(aes(width = value, edge_alpha = value), edge_colour = "lightblue") +
+  geom_node_text(aes(label = name), col = "black", size = 4) +
+  theme_graph()
+
 library(ggalluvial)
 
 mdf_unique %>% 
@@ -44,7 +54,7 @@ save(nazwiska, file = "data/nazwiska.RData")
 nazwiska <- nazwiska %>% 
   filter(liczba > 200)
 
-macierz_nazw <- stringdistmatrix(a = nazwiska$nazwisko, b = nazwiska$nazwisko, method = "soundex")
+macierz_nazw <- stringdistmatrix(a = nazwiska$nazwisko, b = nazwiska$nazwisko, method = "jw")
 
 colnames(macierz_nazw) <- row.names(macierz_nazw) <- nazwiska$nazwisko
 
@@ -71,5 +81,15 @@ mdf_unique %>%
 
 kowalski <- mdf_unique %>% 
   filter(from == "KUBICA")
+
+mdf_unique_graph <- mdf_unique %>% 
+  top_n(50, -value)
+
+wordnetwork <- graph_from_data_frame(mdf_unique_graph)
+
+ggraph(wordnetwork, layout = "fr") +
+  geom_edge_link(aes(width = value, edge_alpha = value), edge_colour = "lightblue") +
+  geom_node_text(aes(label = name), col = "black", size = 4) +
+  theme_graph()
 
 

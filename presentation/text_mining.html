@@ -24,7 +24,7 @@ class: center, middle, inverse, title-slide
 
 1. Wprowadzenie
 
-2. Odlegość pomiędzy tekstami
+2. Podobieństwo tekstów
 
 3. Metoda n-gramów
 
@@ -34,6 +34,23 @@ class: center, middle, inverse, title-slide
 
 # Łukasz Wawrowski
 
+- Uniwersytet Ekonomiczny w Poznaniu
+
+  - statystyka
+  
+  - ubóstwo
+  
+--
+
+- DOJI S.A.
+
+  - projekt GAMEINN
+  
+  - sztuczna inteligencja
+  
+--
+
+- Bloger @ [wawrowski.edu.pl](http://www.wawrowski.edu.pl/)
 
 ---
 
@@ -51,10 +68,17 @@ class: center, middle, inverse, title-slide
 
 https://blog.shotwell.ca/posts/why_i_use_r/
 
-
 ---
 
 # Źródła danych
+
+- [Mining the Social Web](https://www.webpages.uidaho.edu/~stevel/504/Mining-the-Social-Web-2nd-Edition.pdf)
+
+- [Text Mining with R](https://www.tidytextmining.com/)
+
+--
+
+- prezentacja ze szkolenia: lwawrowski.github.io/tm/
 
 ---
 
@@ -545,13 +569,54 @@ Z przedziału 0-1 - 0 oznacza identyczne ciągi
 
 ---
 
-# Podsumowanie
+# Wykres Sankeya
 
-Prezentacja wyników
+Pakiet _ggalluvial_
 
-- wykres Sankeya
 
-- wykres strunowy (chord diagram)
+```r
+ggplot(data, aes(y = value, axis1 = from, axis2 = to)) +
+  geom_alluvium(aes(fill = value)) +
+  geom_stratum(width = 1/12, fill = "black", color = "grey") +
+  geom_label(stat = "stratum", infer.label = TRUE)
+```
+
+---
+
+# Wykres strunowy (chord diagram)
+
+Pakiet _circlize_
+
+
+```r
+chordDiagram(data)
+```
+
+Zbiór danych wejściowych powiniem zawierać trzy kolumny o następujących nazwach:
+
+- `from`
+
+- `to`
+
+- `value`
+
+Wówczas wykres stworzy się automatycznie.
+
+---
+
+# Wizualizacja na grafie
+
+Potrzebne pakiety _igraph_ oraz _ggraph_.
+
+
+```r
+wordnetwork &lt;- graph_from_data_frame(data)
+
+ggraph(wordnetwork, layout = "fr") +
+  geom_edge_link(aes(width = cooc, edge_alpha = cooc), edge_colour = "lightblue") +
+  geom_node_text(aes(label = name), col = "black", size = 4) +
+  theme_graph()
+```
 
 ---
 
@@ -577,7 +642,7 @@ Jak można przekręcić nazwisko "Kowalski"? Jakie nazwiska mogą powstać poprz
 
 # Metoda n-gramów
 
-Identyfikacja pojawiających się najczęściej par oraz trójek **sąsiadujących** ze sobą słów. 
+Identyfikacja pojawiających się najczęściej pojedyńczych słów, a także par oraz trójek **sąsiadujących** ze sobą słów. 
 
 1. Oczyszczenie danych
 
@@ -586,8 +651,10 @@ Identyfikacja pojawiających się najczęściej par oraz trójek **sąsiadujący
    - dla wybranych języków - funkcja `stopwords` z pakietu _tm_
    
    - dla języka polskiego - [lista 350 słów](https://github.com/bieli/stopwords/blob/master/polish.stopwords.txt)
+   
+3. Znalezienie wszystkich n-gramów
 
-3. Prezentacja wyników jako wykresu słupkowego lub chmury słów
+4. Prezentacja wyników jako wykresu słupkowego lub chmury słów
 
 ---
 
@@ -605,13 +672,112 @@ Identyfikacja pojawiających się najczęściej par oraz trójek **sąsiadujący
 
 ---
 
+# Szukanie n-gramów
+
+Funkcja `unnest_tokens` z pakietu _tidytext_ służy do zamiany długiego tekstu na n-gramy.
+
+
+```r
+unnest_tokens(tbl = zbior, output = nazwa_kolumny, input = nazwa_kolumny,
+              token = "words", n = 1, drop = FALSE)
+```
+
+- `tbl` - nazwa analizowanego zbioru
+
+- `output` - nazwa kolumny zawierającej n-gramy
+
+- `input` - nazwa kolumny zawierającej analizowany tekst
+
+- `token` - domyślna wartość to "words" oznaczająca analizę pojedyńczych słów, wartość "ngrams" pozwala analizować n-gramy
+
+- `n` - liczba słów w n-gramie
+
+- `drop` - czy usuwać kolumnę wejściową (domyślnie `TRUE`)
+
+W rezultacie otrzymuje się zbiór zawierający jeden n-gram w wierszu. 
+
+Analizowana kolumna nie może zawierać braków danych `NA`.
+
+---
+
+# Zbiór googlenews
+
+Dane pobierane przez [newsapi.org](https://newsapi.org/) w dwóch okresach:
+
+- [19.08.2019 - 1.09.2019](data/googlenews.RData)
+
+- 3.01.2019 - 8.01.2020
+
+Zawartość zbiorów:
+
+- id
+- name - nazwa źródła
+- author - nazwa autora
+- title - nagłówek artykułu
+- description - dłuższy opis artykułu
+- url - adres oryginalnego artykułu
+- urlToImage - adres miniaturki
+- publishedAt - data publikacji
+- content - dłuższa część artykułu
+- category - jedna z 7 kategorii artykułu: business, entertainment, general, health, science, sports, technology
+
+---
+
+# Zadanie
+
+Na podstawie artykułów dotyczących sportu przeprowadź analizę n-gramów. 
+
+---
+
+# Lematyzacja i tagowanie
+
+Lematyzacja - sprowadzanie formy fleksyjnej wyrazu do postaci słownikowej.
+
+Tagowanie - przyporządkowanie wyrazu do części mowy.
+
+---
+
+# UDPipe
+
+Biblioteka stworzona przez Instytut Lingwistyki Formalnej i Stosowanej na Uniwersytecie Karola w Pradze. 
+
+Stworzony niezależnie pakiet R [udpipe](https://bnosac.github.io/udpipe/en/index.html).
+
+1. Pobranie modelu dla języka polskiego `mod &lt;- udpipe_download_model(language = "polish-lfg")`
+
+2. Załadowanie tego modelu `model &lt;- udpipe_load_model("sciezka")`
+
+3. Tagowanie i lematyzacja tekstu `udpipe_annotate()`
+
+---
+
+# Zbiór wynikowy
+
+W zbiorze wynikowym znajdują się następujące kolumny:
+
+- doc_id - identyfikator tekstu
+- paragraph_id - identyfikator paragrafu
+- sentence_id - identyfikator zdania
+- sentence - analizowane zdanie
+- token_id - identyfikator części zdania
+- token - wyodrębniona część zdania
+- lemma - postać słownikowa tokenu
+- upos - część mowy
+- xpos - tag części mowy
+- feats - lista cech morfologicznych (przypadek, rodzaj)
+- head_token_id - identyfikator podmiotu
+- dep_rel - relacje zależności
+- deps
+- misc - dodatkowe przypisy
+
+---
+
 # Części mowy
 
 - rzeczownik (NOUN)
 - czasownik (VERB)
 - przymiotnik (ADJ - adjective)
 - przysłówek (ADV - adverb)
-
 - zaimek (PRON - pronoun)
 - nazwy własne (PROPN - proper noun)
 - przyimki określajace położenie (ADP - adposition)
@@ -619,23 +785,13 @@ Identyfikacja pojawiających się najczęściej par oraz trójek **sąsiadujący
 - spójnik koordynujący (CCONJ - coordinating conjunction)
 - znak interpunkcyjny (PUNCT - punctuation)
 - liczebnik (NUM - numeral)
-- partykuła (PART = particle)
-- (AUX - auxiliary)
-- (DET - determiner)
+- partykuła (PART - particle)
+- czasownik posiłkowy (AUX - auxiliary)
+- określnik (DET - determiner)
 - spójnik podrzędny (SCONJ - subordinating conjunction)
 - (SYM - symbol)
 
 [źródło](https://universaldependencies.org/u/pos/index.html)
-
----
-
-# Lematyzacja
-
-Sprowadzanie formy fleksyjnej wyrazu do postaci słownikowej.
-
----
-
-# Zbiór wynikowy
 
 ---
 
@@ -649,17 +805,114 @@ Dla słów ważny jest kontekst.
 
 - Parts of Speech phrase sequence detection
 
+Wyszukiwanie słów kluczowych niekoniecznie występujących obok siebie.
+
 ---
 
 # RAKE
+
+1. Eliminacja słów nie mających wpływu na treść
+
+2. Stworzenie macierzy współwystępowania
+
+3. Obliczenie wyniku na podstawie macierzy
+
+4. `\(T\)` fraz z najwyższym wynikiem uznawane są za słowa kluczowe
+
+???
 
 https://monkeylearn.com/keyword-extraction/
 
 ---
 
+# RAKE
+
+Funkcja
+
+
+```r
+keywords_rake(x, term, group, relevant, ngram_max = 2, n_min = 2)
+```
+
+- `x` - obiekt z funkcji `udpipe_annotate()`
+
+- `term` - kolumna do analizy
+
+- `group` - identyfikator dokumentu
+
+- `relevant` - wybór wierszy uwzględnionych w analizie np. `x$upos %in% c("NOUN", "ADJ")`
+
+- `ngram_max` - maksymalna liczba wyrazów w kluczowej frazie
+
+- `n_min` - minimalna liczba wystąpienia wyrazu, żeby był brany pod uwagę w analizie
+
+---
+
 # PMI
 
+Analiza kolokacji słów na podstawie częstości występowania.
+
+`$$PMI=log_2\frac{p(x,y)}{p(x)p(y)}$$`
+
+- `\(p(x,y)\)` - częstość występowania pary słów `\(x\)` i `\(y\)`
+
+- `\(p(x)\)` - częstość występowania słowa `\(x\)`
+
+- `\(p(y)\)` - częstość występowania słowa `\(y\)`
+
+PMI równe 0 oznacza, że analizowane słowa są statystycznie niezależne. Dodania wartość PMI oznacza, że analizowane słowa występują częściej niż wynikałoby to z założenia o niezależności. 
+
+???
+
 https://en.wikipedia.org/wiki/Pointwise_mutual_information
+
+---
+
+# PMI
+
+
+```r
+keywords_collocation(x, term, group, ngram_max = 2, n_min = 2)
+```
+
+- `x` - obiekt z funkcji `udpipe_annotate()`
+
+- `term` - kolumna do analizy
+
+- `group` - identyfikator dokumentu
+
+- `ngram_max` - maksymalna liczba wyrazów w kluczowej frazie
+
+- `n_min` - minimalna liczba wystąpienia wyrazu, żeby był brany pod uwagę w analizie
+
+---
+
+# Współwystępowanie
+
+
+```r
+cooccurrence(x, term, group)
+```
+
+- `x` - obiekt z funkcji `udpipe_annotate()`
+
+- `term` - kolumna do analizy
+
+- `group` - identyfikator dokumentu
+
+Funkcja zwróci bigramy wraz z liczbą wystąpień.
+
+---
+
+# Zadanie
+
+Na podstawie danych z googlenews przeprowadź analizę tekstu.
+
+---
+
+class: center, middle, inverse
+
+# Dziękuję za uwagę!
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
