@@ -92,4 +92,25 @@ ggraph(wordnetwork, layout = "fr") +
   geom_node_text(aes(label = name), col = "black", size = 4) +
   theme_graph()
 
+# google
+
+news_general <- googlenews %>%
+  filter(category == "general") %>% 
+  mutate(unique_id = 1:nrow(.))
+
+macierz <- stringdistmatrix(a = news_general$title, b = news_general$title, method = "jw")
+
+colnames(macierz) <- row.names(macierz) <- news_general$title
+
+macierz[lower.tri(macierz)] <- Inf
+
+mdf <- reshape2::melt(macierz)
+
+mdf_unique <- mdf %>% 
+  rename(from=Var1, to=Var2) %>% 
+  filter(value != Inf) %>% 
+  filter(from != to)
+
+mdf_unique_graph <- mdf_unique %>% 
+  top_n(50, -value)
 

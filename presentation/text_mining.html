@@ -104,79 +104,82 @@ Zastosowania:
 
 ---
 
-# Przetwarzanie tekstu w R
+# Zestaw analityka - tidyverse
 
-Operacje na wektorach.
-
---
-
-
-```r
-tekst &lt;- "Text mining w R"
-
-nchar(tekst)
+.pull-left[
+```
+install.packages("tidyverse")
 ```
 
+- readxl - wczytywanie plików Excela
+- haven - wczytywanie plików SAS, SPSS, Stata
+- jsonlite - wczytywanie JSON
+- xml2 - wczytywanie XML
+- httr - dostęp do stron html
+- rvest - web scraping
+- DBI - dostęp do baz danych
+- lubridate - operacje na datach
+- hms - operacje na czasie dnia
+- blob - przechowywanie danych binarnych
+- magrittr - przetwarzanie potokowe `%&gt;%`
+- glue - łączenie tekstów
+
+]
+
+.pull-right[
 ```
-## [1] 15
+library("tidyverse")
 ```
 
-```r
-charToRaw(tekst)
-```
+- ggplot2 - wykresy
+- dplyr - przetwarzanie danych
+- tidyr - porządkowoanie danych
+- readr - wczytywanie plików tekstowych
+- purrr - programowanie funkcyjne
+- tibble - format dla zbiorów
+- stringr - operacje na tekstach
+- forcats - operacje na czynnikach
 
-```
-##  [1] 54 65 78 74 20 6d 69 6e 69 6e 67 20 77 20 52
-```
+]
 
-```r
-rawToChar(rev(charToRaw(tekst)))
-```
-
-```
-## [1] "R w gninim txeT"
-```
-
---
-
-Bazowe funkcje w R są mało intuicyjne.
+[Strona projektu Tidyverse](https://www.tidyverse.org/)
 
 ---
 
-# Przetwarzanie napisów
+# Zbiór googlenews
 
-Pakiet **stringi** autorstwa Marka Gągolewskiego zawierający 234 funkcje.
+Dane pobierane przez [newsapi.org](https://newsapi.org/) w dwóch okresach:
 
-- prosty w użyciu - funkcje zaczynają się przedrostkiem `stri_`
+- [19.08.2019 - 1.09.2019](data/googlenews.RData)
 
-- wiele przydatnych funkcji
+- 3.01.2019 - 8.01.2020
 
-- bardzo szybki
+Zawartość zbiorów:
 
-- bardzo _eRowy_
+- id
+- name - nazwa źródła
+- author - nazwa autora
+- title - nagłówek artykułu
+- description - dłuższy opis artykułu
+- url - adres oryginalnego artykułu
+- urlToImage - adres miniaturki
+- publishedAt - data publikacji
+- content - dłuższa część artykułu
+- category - jedna z 7 kategorii artykułu: business, entertainment, general, health, science, sports, technology
 
+---
 
-```r
-paste(letters[1:3], NA)
-```
+# Zadanie
 
-```
-## [1] "a NA" "b NA" "c NA"
-```
+Przeprowadź eksploracyjną analizę danych dla zbioru googlenews. 
 
-```r
-stri_join(letters[1:3], NA)
-```
+1. Kto najczęściej publikował?
 
-```
-## [1] NA NA NA
-```
+2. Kiedy pojawiały się artykuły?
 
-Pakiet **stringr** zawiera 42 funkcje z pakietu **stringi**.
+3. Ile jest artykułów w danej kategorii?
 
-???
-
-https://drive.google.com/drive/u/0/folders/0B-ZJyVlQBsqlcXRsaHI5bDdtaUk
+4. W jaki dzień tygodnia pojawia się najwięcej artykułów?
 
 ---
 
@@ -640,6 +643,82 @@ Jak można przekręcić nazwisko "Kowalski"? Jakie nazwiska mogą powstać poprz
 
 ---
 
+# Przetwarzanie tekstu w R
+
+Operacje na wektorach.
+
+--
+
+
+```r
+tekst &lt;- "Text mining w R"
+
+nchar(tekst)
+```
+
+```
+## [1] 15
+```
+
+```r
+charToRaw(tekst)
+```
+
+```
+##  [1] 54 65 78 74 20 6d 69 6e 69 6e 67 20 77 20 52
+```
+
+```r
+rawToChar(rev(charToRaw(tekst)))
+```
+
+```
+## [1] "R w gninim txeT"
+```
+
+--
+
+Bazowe funkcje w R są mało intuicyjne.
+
+---
+
+# Przetwarzanie napisów
+
+Pakiet **stringi** autorstwa Marka Gągolewskiego zawierający 234 funkcje.
+
+- prosty w użyciu - funkcje zaczynają się przedrostkiem `stri_`
+
+- wiele przydatnych funkcji
+
+- bardzo szybki
+
+- bardzo _eRowy_
+
+
+```r
+paste(letters[1:3], NA)
+```
+
+```
+## [1] "a NA" "b NA" "c NA"
+```
+
+```r
+stri_join(letters[1:3], NA)
+```
+
+```
+## [1] NA NA NA
+```
+
+Pakiet **stringr** zawiera 42 funkcje z pakietu **stringi**.
+
+???
+
+https://drive.google.com/drive/u/0/folders/0B-ZJyVlQBsqlcXRsaHI5bDdtaUk
+
+---
+
 # Metoda n-gramów
 
 Identyfikacja pojawiających się najczęściej pojedyńczych słów, a także par oraz trójek **sąsiadujących** ze sobą słów. 
@@ -697,29 +776,6 @@ unnest_tokens(tbl = zbior, output = nazwa_kolumny, input = nazwa_kolumny,
 W rezultacie otrzymuje się zbiór zawierający jeden n-gram w wierszu. 
 
 Analizowana kolumna nie może zawierać braków danych `NA`.
-
----
-
-# Zbiór googlenews
-
-Dane pobierane przez [newsapi.org](https://newsapi.org/) w dwóch okresach:
-
-- [19.08.2019 - 1.09.2019](data/googlenews.RData)
-
-- 3.01.2019 - 8.01.2020
-
-Zawartość zbiorów:
-
-- id
-- name - nazwa źródła
-- author - nazwa autora
-- title - nagłówek artykułu
-- description - dłuższy opis artykułu
-- url - adres oryginalnego artykułu
-- urlToImage - adres miniaturki
-- publishedAt - data publikacji
-- content - dłuższa część artykułu
-- category - jedna z 7 kategorii artykułu: business, entertainment, general, health, science, sports, technology
 
 ---
 
@@ -789,7 +845,7 @@ W zbiorze wynikowym znajdują się następujące kolumny:
 - czasownik posiłkowy (AUX - auxiliary)
 - określnik (DET - determiner)
 - spójnik podrzędny (SCONJ - subordinating conjunction)
-- (SYM - symbol)
+- symbol (SYM)
 
 [źródło](https://universaldependencies.org/u/pos/index.html)
 
