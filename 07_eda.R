@@ -2,8 +2,13 @@ library(tidyverse)
 
 load("data/googlenews.RData")
 
-name_count <- googlenews %>% 
-  count(name)
+googlenews %>% 
+  count(name) %>% 
+  top_n(10, n) %>% 
+  mutate(name=fct_reorder(name, n)) %>% 
+  ggplot(aes(x=name, y=n)) +
+    geom_col() +
+    coord_flip()
 
 author_count <- googlenews %>% 
   count(author)
@@ -16,15 +21,14 @@ googlenews <- googlenews %>%
          weekday=wday(published))
 
 googlenews %>% 
-  count(category, date) %>% 
-  ggplot(aes(x=date, y=n, color=category)) + 
-  geom_smooth(se=F) +
-  ylim(0,400)
+  count(date) %>% 
+  ggplot(aes(x=date, y=n)) + 
+  geom_line()
 
 googlenews %>% 
-  count(category, weekday) %>% 
-  ggplot(aes(x=weekday, y=n, fill=category)) + 
-  geom_col(position = "dodge")
+  count(weekday) %>% 
+  ggplot(aes(x=as.factor(weekday), y=n)) + 
+  geom_col()
   
 
 

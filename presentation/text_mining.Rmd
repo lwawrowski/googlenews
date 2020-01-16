@@ -147,6 +147,24 @@ library("tidyverse")
 
 ---
 
+# Wybrane funkcje
+
+- `select()` - wybór zmiennych
+
+- `filter()` - wybór obserwacji
+
+- `mutate()` - tworzenie/modyfikacja zmiennej
+
+- `rename()` - zmiana nazwy zmiennej
+
+- `count()` - zliczanie obserwacji
+
+- `summarise()` - podsumowania danych
+
+- `group_by()` - operowanie na grupach
+
+---
+
 # Zbiory googlenews
 
 Dane pobierane przez [newsapi.org](https://newsapi.org/) w dwóch okresach:
@@ -176,13 +194,160 @@ class: inverse
 
 Przeprowadź eksploracyjną analizę danych dla zbioru googlenews. 
 
-1. Kto najczęściej publikował?
+1. Ile jest artykułów w danej kategorii?
 
-2. Kiedy pojawiały się artykuły?
+2. Kto najczęściej publikował?
 
-3. Ile jest artykułów w danej kategorii?
+3. Kiedy pojawiały się artykuły?
 
 4. W jaki dzień tygodnia pojawia się najwięcej artykułów?
+
+---
+
+# Ile jest artykułów w danej kategorii?
+
+.pull-left[
+
+```{r eval=FALSE}
+library(tidyverse)
+
+load("/data/googlenews.RData")
+
+googlenews %>% 
+  count(name) %>% 
+  top_n(10, n) %>% 
+  mutate(name=fct_reorder(name, n)) %>% 
+  ggplot(aes(x=name, y=n)) +
+    geom_col() +
+    coord_flip()
+
+```
+
+
+]
+
+.pull-right[
+
+```{r echo=FALSE}
+library(tidyverse)
+
+load("../data/googlenews.RData")
+
+googlenews %>% 
+  count(name) %>% 
+  top_n(10, n) %>% 
+  mutate(name=fct_reorder(name, n)) %>% 
+  ggplot(aes(x=name, y=n)) +
+    geom_col() +
+    coord_flip()
+
+```
+
+
+---
+
+# Kto najczęściej publikował?
+
+.pull-left[
+
+```{r eval=FALSE}
+googlenews %>% 
+  count(category) %>% 
+  mutate(category=fct_reorder(category, n)) %>% 
+  ggplot(aes(x=category, y=n)) +
+    geom_col() +
+    coord_flip()
+
+```
+
+
+]
+
+.pull-right[
+
+```{r echo=FALSE}
+googlenews %>% 
+  count(category) %>% 
+  mutate(category=fct_reorder(category, n)) %>% 
+  ggplot(aes(x=category, y=n)) +
+    geom_col() +
+    coord_flip()
+
+```
+
+
+]
+
+---
+
+# Kiedy pojawiały się artykuły?
+
+.pull-left[
+
+```{r eval=FALSE}
+library(lubridate)
+
+googlenews <- googlenews %>% 
+  mutate(published=as_datetime(publishedAt),
+         date=date(published),
+         weekday=wday(published))
+
+googlenews %>% 
+  count(date) %>% 
+  ggplot(aes(x=date, y=n)) + 
+  geom_line()
+```
+
+
+]
+
+.pull-right[
+
+```{r echo=FALSE}
+library(lubridate)
+
+googlenews <- googlenews %>% 
+  mutate(published=as_datetime(publishedAt),
+         date=date(published),
+         weekday=wday(published))
+
+googlenews %>% 
+  count(date) %>% 
+  ggplot(aes(x=date, y=n)) + 
+  geom_line()
+```
+
+
+]
+
+
+---
+
+# W jaki dzień tygodnia pojawia się najwięcej artykułów?
+
+.pull-left[
+
+```{r eval=FALSE}
+googlenews %>% 
+  count(weekday) %>% 
+  ggplot(aes(x=as.factor(weekday), y=n)) + 
+  geom_col()
+```
+
+
+]
+
+.pull-right[
+
+```{r echo=FALSE}
+googlenews %>% 
+  count(weekday) %>% 
+  ggplot(aes(x=as.factor(weekday), y=n)) + 
+  geom_col()
+```
+
+
+]
 
 ---
 
@@ -795,6 +960,18 @@ class: inverse
 # Zadanie
 
 Na podstawie danych z [googlenews z okresu 3-8.01.2020](data/googlenews2020.RData) przeprowadź kompleksową analizę tekstu wykorzystując wszystkie poznane metody. 
+
+---
+
+# Kody
+
+1. [Eksploracyjna analiza danych](codes/01_eda.R)
+
+2. [Odległość tekstów](codes/02_dist.R)
+
+3. [Metoda n-gramów](codes/03_ngram.R)
+
+4. [Tokenizacja i lematyzacja](codes/04_udpipe.R)
 
 ---
 
